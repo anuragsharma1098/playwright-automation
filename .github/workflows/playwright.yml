@@ -40,7 +40,7 @@ jobs:
       # allure-commandline (installed below via npm ci) needs a JRE at runtime to generate the
       # report - explicit rather than relying on whatever happens to be preinstalled on the runner.
       - name: Setup Java (for Allure report generation)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
