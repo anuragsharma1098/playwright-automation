@@ -1,0 +1,16 @@
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+allure-results/
+allure-report/
+playwright/.cache/
+.env
+*.log
+dist/
+.playwright/
+
+# sample-report/ and sample-report-allure/ are committed intentionally (deliverable: sample
+# execution reports, Playwright's own HTML report and the Allure report, from the same run)
+!sample-report/
+!sample-report-allure/
