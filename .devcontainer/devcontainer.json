@@ -1,0 +1,45 @@
+{
+  "name": "Vacation Rental Automation",
+  "image": "mcr.microsoft.com/playwright:v1.62.1-noble",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistro": "open"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "GitHub.vscode-github-actions",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && npm ci && npx -y @playwright/mcp@latest --version",
+  "remoteUser": "pwuser",
+  "forwardPorts": [9000],
+  "portsAttributes": {
+    "9000": {
+      "label": "Allure Report",
+      "onAutoForward": "notify"
+    }
+  }
+}

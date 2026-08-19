@@ -1,0 +1,86 @@
+name: Playwright Tests
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+# A push to a branch with an open PR fires both `push` and `pull_request` for the same commit;
+# cancel the superseded run rather than hitting the two live production sites twice at once.
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Automation Tests
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --ipc=host
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # lint-staged (devDependency, used by Husky's pre-commit hook) requires Node >=22.22.1 -
+      # matches package.json's "engines" field.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # allure-commandline (installed below via npm ci) needs a JRE at runtime to generate the
+      # report - explicit rather than relying on whatever happens to be preinstalled on the runner.
+      - name: Setup Java (for Allure report generation)
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # tests/demo-intentional-failure.spec.ts fails on every run by design (it exists to
+      # demonstrate the failure-diagnostics pipeline locally - see README.md "Failure
+      # diagnostics") and would make this job permanently red if included. tc*.spec.ts covers
+      # every real TC1-TC6 scenario against both sites; the glob naturally excludes it.
+      - name: Run test suite (both sites)
+        run: npx playwright test tests/tc*.spec.ts
+        env:
+          CI: true
+
+      - name: Generate Allure report
+        if: always()
+        run: npx allure generate allure-results --clean -o allure-report
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 14
+
+      - name: Upload raw test results (screenshots, videos, traces)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 14

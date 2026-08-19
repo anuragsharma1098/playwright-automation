@@ -1,0 +1,28 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vacation-rental-automation-dev:latest
+    container_name: vacation-rental-automation-dev
+
+    # Workspace bind mount + a named volume for node_modules so host/container installs don't
+    # collide (Windows/Linux native module builds differ).
+    volumes:
+      - ..:/workspace:cached
+      - node_modules:/workspace/node_modules
+
+    working_dir: /workspace
+    ipc: host
+
+    stdin_open: true
+    tty: true
+
+    environment:
+      NODE_ENV: development
+
+    command: /bin/bash
+
+volumes:
+  node_modules:
+    driver: local
