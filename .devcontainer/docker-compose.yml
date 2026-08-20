@@ -21,6 +21,14 @@ services:
     environment:
       NODE_ENV: development
 
+    # Published so a manual `docker compose up` (no VS Code auto-forwarding) can still reach
+    # these from the host: 9000 is `npm run allure:open`/`allure:serve`, 9224 is
+    # `npm run test:ui:docker` (Playwright UI mode, viewed in a host browser since the container
+    # itself has no display).
+    ports:
+      - '9000:9000'
+      - '9224:9224'
+
     command: /bin/bash
 
 volumes:

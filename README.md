@@ -8,7 +8,7 @@ per-site config file and two confirmed markup differences are branched on.
 
 > **These are live production sites.** Nothing here completes a real booking or payment.
 
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the structural map (layered design, class
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the structural map (layered design, class
 relationships, a sequence-diagrammed test run, the failure-diagnostics pipeline, CI, and
 containerization) - this README covers setup, usage, and the reasoning behind each decision.
 
@@ -106,10 +106,12 @@ retries, the trace viewer, and an HTML reporter with screenshot/video capture fo
 diagnostic the assignment asks for is either built in or a thin layer on top of what's built in.
 
 **Multi-site strategy: Playwright `projects`, not duplicated specs.** `playwright.config.ts`
-declares one project per site (`alice-lodging`, `firesky-retreats`), each carrying a custom `site`
-option. Every file in `tests/` is written once and runs under both projects automatically. Adding a
-third site is a new `SiteConfig` entry in `src/config/sites.ts` plus a new project block — no new
-test files, and (per the confirmed findings below) usually no new selectors either.
+declares one project per site × browser combination (`alice-chromium`, `alice-firefox`,
+`alice-webkit`, `alice-edge`, and the same four for `firesky`), each carrying a custom `site`
+option. Every file in `tests/` is written once and runs under every project automatically. Adding a
+third site is a new `SiteConfig` entry in `src/config/sites.ts`; adding a browser is a one-line
+addition to the `browsers` array in `playwright.config.ts` — no new test files, and (per the
+confirmed findings below) usually no new selectors either.
 
 **Both sites turned out to run on the same platform.** Live inspection found both footers credit
 "Powered by Flow One" — a shared white-label vacation-rental platform. Confirmed live: the search
@@ -267,7 +269,8 @@ through.
 ## Playwright CLI
 
 ```bash
-npx playwright test --project=alice-lodging
+npx playwright test --project=alice-chromium
+npx playwright test --project=alice-firefox --project=alice-webkit --project=alice-edge
 npx playwright codegen https://www.alicelodging.com   # bootstrap locators interactively
 npx playwright show-report
 npx playwright show-trace test-results/<test>/trace.zip

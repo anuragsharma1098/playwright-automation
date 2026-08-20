@@ -48,18 +48,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Clean previous Allure results
+        run: npm run allure:clean
+
       # tests/demo-intentional-failure.spec.ts fails on every run by design (it exists to
       # demonstrate the failure-diagnostics pipeline locally - see README.md "Failure
       # diagnostics") and would make this job permanently red if included. tc*.spec.ts covers
       # every real TC1-TC6 scenario against both sites; the glob naturally excludes it.
-      - name: Run test suite (both sites)
-        run: npx playwright test tests/tc*.spec.ts
+      #
+      # Restricted to chromium/webkit projects: the playwright/playwright Docker image
+      # only bundles those three engines. The *-edge projects (real Microsoft Edge via the
+      # 'msedge' channel) aren't in this image and are meant for local/manual runs instead.
+      - name: Run test suite (both sites, chromium/webkit)
+        run: npm run test -- tests/tc*.spec.ts --project='*-chromium' --project='*-webkit'
         env:
           CI: true
 
       - name: Generate Allure report
         if: always()
-        run: npx allure generate allure-results --clean -o allure-report
+        run: npm run allure:generate
 
       - name: Upload Playwright HTML report
         if: always()
@@ -75,6 +82,14 @@ jobs:
         with:
           name: allure-report
           path: allure-report/
+          retention-days: 14
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: test-results/junit-report.xml
           retention-days: 14
 
       - name: Upload raw test results (screenshots, videos, traces)

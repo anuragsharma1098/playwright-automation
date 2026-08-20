@@ -105,17 +105,19 @@ surfaced, not left as manual troubleshooting steps:
   runs `git config --global --add safe.directory /workspace` for the compose path;
   `devcontainer.json`'s `postCreateCommand` does the equivalent for the VS Code path.
 
-Note: this project's `playwright.config.ts` only configures Chromium projects (one per site) -
-Firefox/WebKit are present in the base image but unused unless you add projects for them.
+Note: `playwright.config.ts` runs each site against Chromium, Firefox, and WebKit (all three are
+bundled in this base image); Microsoft Edge is a fourth project per site but uses the real `msedge`
+channel, which this image doesn't include - `npm run test:edge` needs `npx playwright install
+msedge` run inside the container first.
 
 ## What's included in the dev container
 
 | Component          | Version                   | Purpose                                                                                                   |
 | ------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------- |
 | **Playwright**     | 1.62.1                    | Official image, matches `@playwright/test` exactly                                                        |
-| Chromium           | bundled with 1.62.1       | Browser actually used by this suite                                                                       |
-| Firefox            | bundled with 1.62.1       | Included in the base image, not currently exercised                                                       |
-| WebKit             | bundled with 1.62.1       | Included in the base image, not currently exercised                                                       |
+| Chromium           | bundled with 1.62.1       | Used by every `*-chromium` project                                                                        |
+| Firefox            | bundled with 1.62.1       | Used by every `*-firefox` project                                                                         |
+| WebKit             | bundled with 1.62.1       | Used by every `*-webkit` project                                                                          |
 | Node.js            | as shipped in the image   | JavaScript/TypeScript runtime                                                                             |
 | TypeScript         | latest (installed global) | Type-safe development                                                                                     |
 | Git                | via devcontainer feature  | Version control inside the container                                                                      |
@@ -146,7 +148,8 @@ npm run test:alice       # Alice Lodging only
 npm run test:firesky     # Firesky Retreats only
 npx playwright test -g "TC2"
 npm run test:headed
-npm run test:ui
+npm run test:ui          # opens a native UI window - won't work in a headless container, see below
+npm run test:ui:docker   # Alice Chromium UI mode for container debugging - serves over :9224
 npm run test:debug
 npm run typecheck
 npm run lint
@@ -156,6 +159,19 @@ npm run allure:generate    # build the Allure report from allure-results/
 npm run allure:open        # serve it on :9000 (forwarded - see devcontainer.json)
 npm run allure:serve       # generate + serve in one ephemeral step
 ```
+
+### Debugging with UI mode inside the container
+
+`playwright test --ui` normally opens a native app window, which doesn't exist in a headless
+container. `npm run test:ui:docker` instead runs `playwright test --ui --project=alice-chromium --ui-host=0.0.0.0
+--ui-port=9224`, which serves the same UI mode (watch mode, time-travel trace viewer, pick-and-run
+tests) as a web page instead of a native window:
+
+1. Run `npm run test:ui:docker` inside the container.
+2. Open `http://localhost:9224` in a browser **on the host** - VS Code Dev Containers auto-forwards
+   port 9224 and opens it for you (see `devcontainer.json`'s `portsAttributes`); with the manual
+   `docker compose` path, `docker-compose.yml` publishes `9224:9224` so the same URL works directly.
+3. Leave the command running - it stays open (watch mode) until you stop it with Ctrl+C.
 
 ## Container management
 
@@ -190,7 +206,8 @@ docker compose -f .devcontainer/docker-compose.yml up -d --build           # reb
 - **Post-create:** `npm ci && npx -y @playwright/mcp@latest --version` (installs deps, sanity-checks
   the Playwright MCP dev-aid package from `.mcp.json`)
 - **Remote user:** `pwuser` (the Playwright image's built-in non-root user)
-- **Forwarded port:** `9000` for `npm run allure:open`/`allure:serve`
+- **Forwarded ports:** `9000` for `npm run allure:open`/`allure:serve`, `9224` for
+  `npm run test:ui:docker` (Playwright UI mode)
 
 ### Dockerfile (this folder)
 
