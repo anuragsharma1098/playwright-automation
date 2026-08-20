@@ -149,7 +149,7 @@ npm run test:firesky     # Firesky Retreats only
 npx playwright test -g "TC2"
 npm run test:headed
 npm run test:ui          # opens a native UI window - won't work in a headless container, see below
-npm run test:ui:docker   # UI mode for container debugging - serves over :9224, open in a host browser
+npm run test:ui:docker   # Alice Chromium UI mode for container debugging - serves over :9224
 npm run test:debug
 npm run typecheck
 npm run lint
@@ -163,7 +163,7 @@ npm run allure:serve       # generate + serve in one ephemeral step
 ### Debugging with UI mode inside the container
 
 `playwright test --ui` normally opens a native app window, which doesn't exist in a headless
-container. `npm run test:ui:docker` instead runs `playwright test --ui --ui-host=0.0.0.0
+container. `npm run test:ui:docker` instead runs `playwright test --ui --project=alice-chromium --ui-host=0.0.0.0
 --ui-port=9224`, which serves the same UI mode (watch mode, time-travel trace viewer, pick-and-run
 tests) as a web page instead of a native window:
 

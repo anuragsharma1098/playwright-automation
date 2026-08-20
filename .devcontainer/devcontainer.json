@@ -1,11 +1,14 @@
 {
   "name": "Vacation Rental Automation",
-  "image": "mcr.microsoft.com/playwright:v1.62.1-noble",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/java:1": {
       "version": "17",
-      "jdkDistro": "open"
+      "jdkDistro": "tem"
     }
   },
   "customizations": {
@@ -33,7 +36,7 @@
       }
     }
   },
-  "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && npm ci && npx -y @playwright/mcp@latest --version",
+  "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && (npm ci || (rm -f .husky/_/h && npm ci)) && npx -y @playwright/mcp@latest --version",
   "remoteUser": "pwuser",
   "forwardPorts": [9000, 9224],
   "portsAttributes": {

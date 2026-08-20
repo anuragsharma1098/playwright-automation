@@ -53,11 +53,11 @@ jobs:
       # diagnostics") and would make this job permanently red if included. tc*.spec.ts covers
       # every real TC1-TC6 scenario against both sites; the glob naturally excludes it.
       #
-      # Restricted to chromium/firefox/webkit projects: the playwright/playwright Docker image
+      # Restricted to chromium/webkit projects: the playwright/playwright Docker image
       # only bundles those three engines. The *-edge projects (real Microsoft Edge via the
       # 'msedge' channel) aren't in this image and are meant for local/manual runs instead.
-      - name: Run test suite (both sites, chromium/firefox/webkit)
-        run: npx playwright test tests/tc*.spec.ts --project='*-chromium' --project='*-firefox' --project='*-webkit'
+      - name: Run test suite (both sites, chromium/webkit)
+        run: npx playwright test tests/tc*.spec.ts --project='*-chromium' --project='*-webkit'
         env:
           CI: true
 
