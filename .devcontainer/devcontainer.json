@@ -35,11 +35,15 @@
   },
   "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && npm ci && npx -y @playwright/mcp@latest --version",
   "remoteUser": "pwuser",
-  "forwardPorts": [9000],
+  "forwardPorts": [9000, 9224],
   "portsAttributes": {
     "9000": {
       "label": "Allure Report",
       "onAutoForward": "notify"
+    },
+    "9224": {
+      "label": "Playwright UI Mode (debug)",
+      "onAutoForward": "openBrowser"
     }
   }
 }

@@ -165,13 +165,13 @@ classDiagram
 it's the only place the two sites' _interaction pattern_ (not just copy) genuinely diverges: a
 "Destinations" popover on Alice vs. category pill tabs on Firesky.
 
-## 3. Multi-site strategy: one spec, two Playwright projects
+## 3. Multi-site strategy: one spec, a site × browser grid of Playwright projects
 
 ```mermaid
 flowchart LR
-    CONFIG["playwright.config.ts"]
-    P1["project: alice-lodging<br/>use: { baseURL: alicelodging.com, site: 'alice' }"]
-    P2["project: firesky-retreats<br/>use: { baseURL: fireskyretreats.com, site: 'firesky' }"]
+    CONFIG["playwright.config.ts<br/>siteConfigs × browsers"]
+    P1["alice-chromium / -firefox / -webkit / -edge<br/>use: { baseURL: alicelodging.com, site: 'alice', ...device }"]
+    P2["firesky-chromium / -firefox / -webkit / -edge<br/>use: { baseURL: fireskyretreats.com, site: 'firesky', ...device }"]
     SPEC["tests/tc2-search-filter-sort.spec.ts<br/>(written once)"]
     FIXTURE["base.fixture.ts<br/>siteConfig = siteConfigs[site]"]
     SITES["sites.ts<br/>siteConfigs.alice / siteConfigs.firesky"]
@@ -181,12 +181,13 @@ flowchart LR
     P1 -- "site option" --> FIXTURE
     P2 -- "site option" --> FIXTURE
     FIXTURE --> SITES
-    SPEC -- "runs under both" --> P1
-    SPEC -- "runs under both" --> P2
+    SPEC -- "runs under all 8" --> P1
+    SPEC -- "runs under all 8" --> P2
 ```
 
-Adding a third site is a new `SiteConfig` entry plus a new `projects[]` block - no new test files,
-and (per the confirmed platform-parity findings in the README) usually no new selectors either.
+Adding a third site is a new `SiteConfig` entry in `sites.ts`; adding a browser is a one-line
+addition to the `browsers` array - no new test files, and (per the confirmed platform-parity
+findings in the README) usually no new selectors either.
 
 ## 4. A test run, end to end (TC2 example)
 
@@ -349,11 +350,14 @@ vacation-rental-automation/
 ├── sample-report/                      # committed Playwright HTML report from an actual run
 ├── sample-report-allure/               # committed Allure report from the same run
 │
-├── playwright.config.ts                # the two projects (sites), reporters, timeouts/retries/workers
+├── docs/
+│   ├── ARCHITECTURE.md                 # this file
+│   └── adding-new-sites/README.md      # step-by-step guide for adding a new site
+│
+├── playwright.config.ts                # the site × browser project grid, reporters, timeouts/retries/workers
 ├── package.json / package-lock.json    # scripts, pinned devDependency versions
 ├── tsconfig.json                       # strict TS, `@src/*` / `@tests/*` path aliases
 ├── eslint.config.js / .prettierrc.json # lint/format rules enforced by Husky's pre-commit hook
 ├── .mcp.json                           # Playwright MCP server (dev aid, not part of the suite)
-├── README.md                           # setup, usage, design rationale, assumptions/trade-offs
-└── ARCHITECTURE.md                     # this file
+└── README.md                           # setup, usage, design rationale, assumptions/trade-offs
 ```

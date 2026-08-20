@@ -97,8 +97,8 @@ Then run the new/changed spec directly against **both** projects to confirm it p
 just one site - see step 1 on why the same spec should work for both):
 
 ```bash
-npx playwright test <path/to/spec.ts> --project=alice-lodging
-npx playwright test <path/to/spec.ts> --project=firesky-retreats
+npx playwright test <path/to/spec.ts> --project=alice-chromium
+npx playwright test <path/to/spec.ts> --project=firesky-chromium
 ```
 
 If a locator or flow needs live verification first, use the `playwright-cli` skill to confirm it
