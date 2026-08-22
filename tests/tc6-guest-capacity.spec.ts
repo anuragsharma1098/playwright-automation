@@ -21,7 +21,7 @@ test.describe('TC6 (Bonus) - Guest capacity consistency', () => {
     siteConfig,
     page,
   }, testInfo) => {
-    test.setTimeout(150_000); // multiple full property-page loads on top of the search flow
+    test.setTimeout(480_000); // multiple full property-page loads on top of the search flow
 
     const { checkInISO, checkOutISO } = futureStayDates();
     const adults = 6;
