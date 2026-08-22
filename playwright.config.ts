@@ -13,14 +13,13 @@ const browsers = [
 
 export default defineConfig<TestOptions>({
   testDir: './tests',
+  testIgnore: ['**/demo-intentional-failure.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
-  // Capped deliberately (not left to Playwright's CPU-core default): these are two live
-  // production sites we don't control, not a local server - too much concurrency was observed
-  // live to cause its own timeouts/rate-limit-style slowdowns rather than exercising real bugs.
-  // Also simple courtesy - this suite shouldn't behave like a load test against someone's site.
-  workers: process.env.CI ? 2 : 4,
+  retries: process.env.CI ? 2 : 1,
+  // These are live production sites we do not control. Firefox is especially sensitive to
+  // parallel load here, and the intentional demo failure should never run in the normal suite.
+  workers: process.env.CI ? 1 : 1,
   // Real production sites over the open internet, plus a deliberate settle-and-dismiss window for
   // the marketing popup on every navigation - generous headroom keeps that from reading as flake.
   timeout: 90_000,
