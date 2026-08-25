@@ -198,10 +198,10 @@ sampling several, since a capacity bug is more likely to show up on some listing
   would be flaky against Facebook's bot defenses, not our own code. Instead the test asserts the
   link is a well-formed `https://` URL on the right domain (guaranteed by the domain-matching
   discovery step) plus a lenient reachability check that only fails on a genuine dead link.
-- **Concurrency is capped** (`workers: 4` locally, `2` in CI) rather than left at Playwright's
-  CPU-core default. Running all tests across both projects at full local parallelism was observed
-  live to cause its own timeouts against the real sites — and it's simple courtesy not to hammer
-  someone's production site like a load test.
+- **Concurrency is capped at `workers: 1`**, both locally and in CI, rather than left at
+  Playwright's CPU-core default. Running all tests across both projects at higher parallelism was
+  observed live to cause its own timeouts against the real sites — Firefox in particular — and
+  it's simple courtesy not to hammer someone's production site like a load test.
 - **Husky only runs lint-staged on `pre-commit`** (ESLint + Prettier on staged files), not the e2e
   suite. Running real browser tests against two live production sites on every commit would be slow
   and a poor commit-time gate for external systems we don't control; the suite is meant to be run
@@ -257,7 +257,7 @@ all three ways to open it, troubleshooting).
   failure.
 - A `concurrency` group cancels a superseded run (e.g. a second push to a branch with an open PR)
   rather than hitting both production sites twice at once - the same good-citizen reasoning as the
-  capped local `workers` setting (see "Assumptions, trade-offs, and limitations" above).
+  capped `workers: 1` setting (see "Assumptions, trade-offs, and limitations" above).
 
 ## Husky
 
