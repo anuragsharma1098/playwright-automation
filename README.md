@@ -41,6 +41,13 @@ One spec, `tests/demo-intentional-failure.spec.ts`, **fails on purpose** on ever
 solely to demonstrate the failure-diagnostics pipeline (see below) and is clearly labeled and
 isolated from the real TC1–TC6 specs so it's never mistaken for a genuine product bug.
 
+`npm test` (and only that exact script) runs a `pretest` hook that clears `allure-results/` first,
+so the Allure report always reflects just the latest run rather than accumulating results across
+every run since the folder was last cleared. The site/browser-filtered variants above
+(`test:alice`, `test:chromium`, `test:headed`, etc.) don't trigger it — npm only fires `pretest`
+for a script literally named `test` — so run `npm run allure:clean` yourself first if you want the
+same guarantee from one of those.
+
 ## Viewing the report
 
 Two reporters are configured, writing side by side (`list` for console output too):
@@ -198,10 +205,10 @@ sampling several, since a capacity bug is more likely to show up on some listing
   would be flaky against Facebook's bot defenses, not our own code. Instead the test asserts the
   link is a well-formed `https://` URL on the right domain (guaranteed by the domain-matching
   discovery step) plus a lenient reachability check that only fails on a genuine dead link.
-- **Concurrency is capped** (`workers: 4` locally, `2` in CI) rather than left at Playwright's
-  CPU-core default. Running all tests across both projects at full local parallelism was observed
-  live to cause its own timeouts against the real sites — and it's simple courtesy not to hammer
-  someone's production site like a load test.
+- **Concurrency is capped at `workers: 1`**, both locally and in CI, rather than left at
+  Playwright's CPU-core default. Running all tests across both projects at higher parallelism was
+  observed live to cause its own timeouts against the real sites — Firefox in particular — and
+  it's simple courtesy not to hammer someone's production site like a load test.
 - **Husky only runs lint-staged on `pre-commit`** (ESLint + Prettier on staged files), not the e2e
   suite. Running real browser tests against two live production sites on every commit would be slow
   and a poor commit-time gate for external systems we don't control; the suite is meant to be run
@@ -221,8 +228,9 @@ headless test execution, rather than maintaining a separate root-level image for
 
 - **VS Code Dev Containers / GitHub Codespaces**: `devcontainer.json` points straight at the
   pinned Playwright image (`mcr.microsoft.com/playwright:v1.62.1-noble`), adding Git and Java 17
-  devcontainer features, with the Playwright/ESLint/Prettier extensions, format-on-save, and port
-  `9000` (Allure) preconfigured. Open the project → `F1` → `Dev Containers: Reopen in Container`.
+  devcontainer features, with the Playwright/ESLint/Prettier extensions, format-on-save, and ports
+  `9000` (Allure), `9224` (Playwright UI mode), and `9323` (Playwright HTML report) preconfigured.
+  Open the project → `F1` → `Dev Containers: Reopen in Container`.
 - **Headless / CI, no VS Code**: build and run tests through the same `.devcontainer/Dockerfile` +
   `docker-compose.yml` via plain `docker compose`:
 
@@ -257,7 +265,7 @@ all three ways to open it, troubleshooting).
   failure.
 - A `concurrency` group cancels a superseded run (e.g. a second push to a branch with an open PR)
   rather than hitting both production sites twice at once - the same good-citizen reasoning as the
-  capped local `workers` setting (see "Assumptions, trade-offs, and limitations" above).
+  capped `workers: 1` setting (see "Assumptions, trade-offs, and limitations" above).
 
 ## Husky
 

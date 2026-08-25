@@ -266,16 +266,18 @@ product bug.
 ```mermaid
 flowchart LR
     TRIGGER["push or pull_request<br/>-> main or develop<br/>(+ workflow_dispatch)"] --> CONC["concurrency group<br/>cancels a superseded run"]
-    CONC --> CHECKOUT["actions/checkout"]
+    CONC --> JOB["job runs inside container:<br/>mcr.microsoft.com/playwright:v1.62.1-noble"]
+    JOB --> CHECKOUT["actions/checkout"]
     CHECKOUT --> NODE["setup-node 22<br/>(lint-staged floor)"]
     NODE --> JAVA["setup-java 17 Temurin<br/>(for allure generate)"]
     JAVA --> CI["npm ci"]
-    CI --> BROWSERS["npx playwright install --with-deps chromium"]
-    BROWSERS --> RUN["npx playwright test tests/tc*.spec.ts<br/>(glob excludes demo-intentional-failure.spec.ts)"]
+    CI --> ALLUREPRE["allure:clean"]
+    ALLUREPRE --> RUN["npx playwright test tests/tc*.spec.ts<br/>--project='*-chromium' --project='*-webkit'<br/>(glob excludes demo-intentional-failure.spec.ts;<br/>edge projects skipped - not in this image)"]
     RUN --> ALLUREGEN["allure generate (always)"]
     ALLUREGEN --> ART1["upload playwright-report/ (always)"]
     ALLUREGEN --> ART2["upload allure-report/ (always)"]
-    RUN -.on failure.-> ART3["upload test-results/ (failure only)"]
+    ALLUREGEN --> ART3["upload junit-report.xml (always)"]
+    RUN -.on failure.-> ART4["upload test-results/ (failure only)"]
 ```
 
 ## 7. Containerization
@@ -298,9 +300,9 @@ flowchart TB
 ```
 
 Both paths pin the same base image tag on purpose - "works in the dev container" and "works in
-CI" (§6 installs Node/Java itself on a bare `ubuntu-latest` runner instead) mean the same
-Node/browser/OS-dependency versions where it matters (the browsers), while CI stays a plain
-runner rather than a container for simplicity and faster cold starts.
+CI" (§6 runs the job in that same image via `container:`, installing Node/Java into it) mean the
+same Node/browser/OS-dependency versions where it matters (the browsers), with no separate
+image-build step in CI beyond `npm ci`.
 
 ## 8. Directory reference
 

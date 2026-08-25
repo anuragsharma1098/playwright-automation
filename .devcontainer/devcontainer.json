@@ -4,6 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+  "runArgs": ["--name=vacation-rental-automation-dev"],
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/java:1": {
@@ -38,7 +39,7 @@
   },
   "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && (npm ci || (rm -f .husky/_/h && npm ci)) && npx -y @playwright/mcp@latest --version",
   "remoteUser": "pwuser",
-  "forwardPorts": [9000, 9224],
+  "forwardPorts": [9000, 9224, 9323],
   "portsAttributes": {
     "9000": {
       "label": "Allure Report",
@@ -46,6 +47,10 @@
     },
     "9224": {
       "label": "Playwright UI Mode (debug)",
+      "onAutoForward": "openBrowser"
+    },
+    "9323": {
+      "label": "Playwright HTML Report",
       "onAutoForward": "openBrowser"
     }
   }
