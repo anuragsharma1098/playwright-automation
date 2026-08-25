@@ -41,6 +41,13 @@ One spec, `tests/demo-intentional-failure.spec.ts`, **fails on purpose** on ever
 solely to demonstrate the failure-diagnostics pipeline (see below) and is clearly labeled and
 isolated from the real TC1–TC6 specs so it's never mistaken for a genuine product bug.
 
+`npm test` (and only that exact script) runs a `pretest` hook that clears `allure-results/` first,
+so the Allure report always reflects just the latest run rather than accumulating results across
+every run since the folder was last cleared. The site/browser-filtered variants above
+(`test:alice`, `test:chromium`, `test:headed`, etc.) don't trigger it — npm only fires `pretest`
+for a script literally named `test` — so run `npm run allure:clean` yourself first if you want the
+same guarantee from one of those.
+
 ## Viewing the report
 
 Two reporters are configured, writing side by side (`list` for console output too):
@@ -221,8 +228,9 @@ headless test execution, rather than maintaining a separate root-level image for
 
 - **VS Code Dev Containers / GitHub Codespaces**: `devcontainer.json` points straight at the
   pinned Playwright image (`mcr.microsoft.com/playwright:v1.62.1-noble`), adding Git and Java 17
-  devcontainer features, with the Playwright/ESLint/Prettier extensions, format-on-save, and port
-  `9000` (Allure) preconfigured. Open the project → `F1` → `Dev Containers: Reopen in Container`.
+  devcontainer features, with the Playwright/ESLint/Prettier extensions, format-on-save, and ports
+  `9000` (Allure), `9224` (Playwright UI mode), and `9323` (Playwright HTML report) preconfigured.
+  Open the project → `F1` → `Dev Containers: Reopen in Container`.
 - **Headless / CI, no VS Code**: build and run tests through the same `.devcontainer/Dockerfile` +
   `docker-compose.yml` via plain `docker compose`:
 

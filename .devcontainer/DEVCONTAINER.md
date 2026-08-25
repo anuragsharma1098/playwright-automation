@@ -154,7 +154,7 @@ npm run test:debug
 npm run typecheck
 npm run lint
 npm run format
-npm run report             # opens the Playwright HTML report
+npm run report             # serves the Playwright HTML report on :9323 (forwarded - see devcontainer.json)
 npm run allure:generate    # build the Allure report from allure-results/
 npm run allure:open        # serve it on :9000 (forwarded - see devcontainer.json)
 npm run allure:serve       # generate + serve in one ephemeral step
@@ -207,7 +207,11 @@ docker compose -f .devcontainer/docker-compose.yml up -d --build           # reb
   the Playwright MCP dev-aid package from `.mcp.json`)
 - **Remote user:** `pwuser` (the Playwright image's built-in non-root user)
 - **Forwarded ports:** `9000` for `npm run allure:open`/`allure:serve`, `9224` for
-  `npm run test:ui:docker` (Playwright UI mode)
+  `npm run test:ui:docker` (Playwright UI mode), `9323` for `npm run report` (Playwright HTML
+  report)
+- **Container name:** pinned to `vacation-rental-automation-dev` via `runArgs`, matching
+  `docker-compose.yml`'s `container_name` below, so `Reopen in Container` and a manual
+  `docker compose up` always resolve to the same container
 
 ### Dockerfile (this folder)
 
@@ -221,6 +225,8 @@ docker compose -f .devcontainer/docker-compose.yml up -d --build           # reb
 ### docker-compose.yml (this folder)
 
 - Builds the Dockerfile above
+- **Container name:** pinned to `vacation-rental-automation-dev` via `container_name`, matching
+  `devcontainer.json`'s `runArgs` above - same name whichever path you launch from
 - Bind-mounts the workspace (`..:/workspace:cached`) plus a named volume for `node_modules`
   (host and container installs shouldn't share that directory directly - native module builds
   differ between Windows/macOS and Linux)
@@ -255,6 +261,15 @@ anything that runs `npm install`/`npm ci`.
 
 Ensure the workspace bind mount in `docker-compose.yml` uses `:cached` and that you're running as
 `pwuser` (the container's default user) rather than root.
+
+### `docker: Error response from daemon: Conflict. The container name ... is already in use`
+
+Both launch paths share the fixed name `vacation-rental-automation-dev`, so a stopped/leftover
+container from one path blocks starting the other. Remove it first:
+
+```bash
+docker rm vacation-rental-automation-dev
+```
 
 ### Out of disk space
 
