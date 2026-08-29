@@ -253,8 +253,8 @@ flowchart TD
     ALLURE --> GEN["npm run allure:generate"]
     GEN --> AREPORT["allure-report/"]
 
-    HTML --> SAMPLE1["committed as sample-report/"]
-    AREPORT --> SAMPLE2["committed as sample-report-allure/"]
+    HTML --> LOCAL1["playwright-report/ (local, gitignored)"]
+    AREPORT --> LOCAL2["allure-report/ (local, gitignored)"]
 ```
 
 `demo-intentional-failure.spec.ts` exists solely to exercise this whole pipeline on demand - it's
@@ -346,11 +346,11 @@ vacation-rental-automation/
 │
 ├── .devcontainer/                      # devcontainer.json + Dockerfile + docker-compose.yml
 │                                        # (see §7 and DEVCONTAINER.md)
-├── .github/workflows/
-│   └── playwright.yml                  # CI (see §6)
-│
-├── sample-report/                      # committed Playwright HTML report from an actual run
-├── sample-report-allure/               # committed Allure report from the same run
+├── .github/
+│   ├── workflows/
+│   │   └── playwright.yml              # CI (see §6)
+│   ├── test_spec/                      # TC1-TC6 written specs (manual test-case docs)
+│   └── PULL_REQUEST_TEMPLATE.md        # PR checklist: scope, local test runs, docs updated
 │
 ├── docs/
 │   ├── ARCHITECTURE.md                 # this file

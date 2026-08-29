@@ -1,18 +1,20 @@
 /**
- * Per-site configuration. This is the single place that captures how AliceLodging and
- * FireskyRetreats differ (copy, valid search terms, filter/sort vocabulary, nav paradigm, and a
- * couple of confirmed markup differences). Page objects read from this config instead of
- * branching on site name, so adding a third site is normally just a new entry here plus a new
+ * Per-site configuration. This is the single place that captures how AliceLodging, FireskyRetreats,
+ * and GoodLifeVacations differ (copy, valid search terms, filter/sort vocabulary, nav paradigm, and
+ * a couple of confirmed markup differences). Page objects read from this config instead of
+ * branching on site name, so adding another site is normally just a new entry here plus a new
  * Playwright project in playwright.config.ts.
  *
- * Values below were confirmed by live inspection of both sites. Both run on the same "Flow One"
- * white-label platform and share almost all markup and behavior (search widget, filters modal,
- * sort dropdown, list-with-us form validation are byte-for-byte identical) - the property card
- * name element is the one confirmed exception (`<label class="text-size-heading3">` on Alice vs.
- * `<h3 class="text-size-body">` on Firesky), captured below as `cardNameSelector`.
+ * Values below were confirmed by live inspection of all three sites - all run on the same
+ * "Flow One" white-label platform (goodlifevacations.com is the network hub that Alice/Firesky
+ * link to as a "Good Life Network" sister brand) and share almost all markup and behavior (search
+ * widget, filters modal, sort dropdown, list-with-us form validation are byte-for-byte identical)
+ * - the property card name element is the one confirmed exception (`<label
+ * class="text-size-heading3">` on Alice vs. `<h3 class="text-size-body">` on Firesky and
+ * GoodLifeVacations), captured below as `cardNameSelector`.
  */
 
-export type SiteName = 'alice' | 'firesky';
+export type SiteName = 'alice' | 'firesky' | 'goodlife';
 
 /** How the site's primary destination/category navigation is shaped (TC4). */
 export type NavStyle = 'destinationDropdown' | 'categoryPills';
@@ -72,5 +74,17 @@ export const siteConfigs: Record<SiteName, SiteConfig> = {
     listWithUsExtraFields: ['Property Location'],
     navStyle: 'categoryPills',
     navCategoryLabel: 'Pool',
+  },
+  goodlife: {
+    name: 'goodlife',
+    displayName: 'Good Life Vacations',
+    baseURL: 'https://www.goodlifevacations.com',
+    validDestination: 'Palm Springs',
+    sortOptions: ['Name - A to Z', 'Name - Z to A'],
+    cardNameSelector: 'h3.text-size-body',
+    listWithUsPath: '/list-with-us',
+    listWithUsExtraFields: ['Property Location'],
+    navStyle: 'categoryPills',
+    navCategoryLabel: 'Group Homes',
   },
 };
