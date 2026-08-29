@@ -67,16 +67,6 @@ timeline view on top of what Playwright's own HTML report gives - both read from
 `testInfo.attach()` calls, so the custom highlighted-failure screenshots (see below) show up in
 either one.
 
-Reports from an actual run against both sites (12 passed, 2 intentionally failed) are committed,
-both from the same run:
-
-- [`sample-report/index.html`](sample-report/index.html) — Playwright's own HTML report
-- [`sample-report-allure/index.html`](sample-report-allure/index.html) — the Allure report
-
-Open either directly in a browser, or serve statically (`npx serve sample-report` /
-`npx serve sample-report-allure`), since some browsers block a `file://` page from loading its own
-JS assets.
-
 ## Failure diagnostics
 
 Every test failure gets, without any extra code in the test itself:
@@ -91,7 +81,7 @@ On top of that, `src/utils/screenshot.ts` adds a **highlighted-element screensho
 wraps a test's key assertion, and on failure draws a red outline around the specific locator that
 assertion cared about, screenshots it, and attaches it to the report as
 `failure-highlight (<label>)` — so the report doesn't just say _what_ failed, it visually points at
-_where_. See it in the sample report on either intentional-failure entry.
+_where_. Run `demo-intentional-failure.spec.ts` and open the HTML report to see it.
 
 ## Project structure
 
