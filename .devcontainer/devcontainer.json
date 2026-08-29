@@ -20,7 +20,20 @@
         "esbenp.prettier-vscode",
         "ms-vscode.vscode-typescript-next",
         "GitHub.vscode-github-actions",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "cweijan.vscode-office",
+        "redhat.vscode-yaml",
+        "ms-vscode-remote.remote-containers",
+        "Anthropic.claude-code",
+        "docker.docker",
+        "vscjava.vscode-java-pack",
+        "redhat.java",
+        "vscjava.vscode-gradle",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "ms-azuretools.vscode-containers",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-java-dependency"
       ],
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
