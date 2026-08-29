@@ -19,7 +19,7 @@ export default defineConfig<TestOptions>({
   retries: process.env.CI ? 2 : 1,
   // These are live production sites we do not control. Firefox is especially sensitive to
   // parallel load here, and the intentional demo failure should never run in the normal suite.
-  workers: process.env.CI ? 1 : 1,
+  workers: process.env.CI ? 2 : 3,
   // Real production sites over the open internet, plus a deliberate settle-and-dismiss window for
   // the marketing popup on every navigation - generous headroom keeps that from reading as flake.
   timeout: 90_000,

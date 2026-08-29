@@ -2,7 +2,7 @@
   "name": "vacation-rental-automation",
   "version": "1.0.0",
   "private": true,
-  "description": "Playwright UI automation framework validating booking workflows across AliceLodging and FireskyRetreats",
+  "description": "Playwright UI automation framework validating booking workflows across different vacation rental websites.",
   "type": "module",
   "engines": {
     "node": ">=22.22.1"
@@ -12,10 +12,11 @@
     "test": "playwright test",
     "test:alice": "playwright test --project=alice-chromium --project=alice-firefox --project=alice-webkit --project=alice-edge",
     "test:firesky": "playwright test --project=firesky-chromium --project=firesky-firefox --project=firesky-webkit --project=firesky-edge",
-    "test:chromium": "playwright test --project=alice-chromium --project=firesky-chromium",
-    "test:firefox": "playwright test --project=alice-firefox --project=firesky-firefox",
-    "test:webkit": "playwright test --project=alice-webkit --project=firesky-webkit",
-    "test:edge": "playwright test --project=alice-edge --project=firesky-edge",
+    "test:goodlife": "playwright test --project=goodlife-chromium --project=goodlife-firefox --project=goodlife-webkit --project=goodlife-edge",
+    "test:chromium": "playwright test --project=alice-chromium --project=firesky-chromium --project=goodlife-chromium",
+    "test:firefox": "playwright test --project=alice-firefox --project=firesky-firefox --project=goodlife-firefox",
+    "test:webkit": "playwright test --project=alice-webkit --project=firesky-webkit --project=goodlife-webkit",
+    "test:edge": "playwright test --project=alice-edge --project=firesky-edge --project=goodlife-edge",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
@@ -28,6 +29,7 @@
     "report:allure": "npm run allure:generate && npm run allure:open",
     "codegen:alice": "playwright codegen https://www.alicelodging.com",
     "codegen:firesky": "playwright codegen https://www.fireskyretreats.com",
+    "codegen:goodlife": "playwright codegen https://www.goodliferetreats.com",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -52,7 +54,7 @@
     "typescript": "^6.0.3"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.ts,*.tsx,*.js,*.jsx": [
       "eslint --fix",
       "prettier --write"
     ],
