@@ -346,8 +346,11 @@ vacation-rental-automation/
 │
 ├── .devcontainer/                      # devcontainer.json + Dockerfile + docker-compose.yml
 │                                        # (see §7 and DEVCONTAINER.md)
-├── .github/workflows/
-│   └── playwright.yml                  # CI (see §6)
+├── .github/
+│   ├── workflows/
+│   │   └── playwright.yml              # CI (see §6)
+│   ├── test_spec/                      # TC1-TC6 written specs (manual test-case docs)
+│   └── PULL_REQUEST_TEMPLATE.md        # PR checklist: scope, local test runs, docs updated
 │
 ├── docs/
 │   ├── ARCHITECTURE.md                 # this file
