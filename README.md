@@ -217,7 +217,7 @@ Everything lives under `.devcontainer/` - one setup covers both interactive deve
 headless test execution, rather than maintaining a separate root-level image for each:
 
 - **VS Code Dev Containers / GitHub Codespaces**: `devcontainer.json` points straight at the
-  pinned Playwright image (`mcr.microsoft.com/playwright:v1.62.1-noble`), adding Git and Java 17
+  pinned Playwright image (`mcr.microsoft.com/playwright:v1.63.0-noble`), adding Git and Java 17
   devcontainer features, with the Playwright/ESLint/Prettier extensions, format-on-save, and ports
   `9000` (Allure), `9224` (Playwright UI mode), and `9323` (Playwright HTML report) preconfigured.
   Open the project → `F1` → `Dev Containers: Reopen in Container`.

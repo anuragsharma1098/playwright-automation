@@ -81,8 +81,8 @@ The full `docker compose -f .devcontainer/docker-compose.yml up --build` → `ex
 flow has been exercised end to end (not just built):
 
 ```
-✅ mcr.microsoft.com/playwright:v1.62.1-noble — image builds and runs as pwuser
-✅ Playwright 1.62.1 — chromium, firefox, webkit all preinstalled in the base image
+✅ mcr.microsoft.com/playwright:v1.63.0-noble — image builds and runs as pwuser
+✅ Playwright 1.63.0 — chromium, firefox, webkit all preinstalled in the base image
 ✅ npm ci — 179 packages, 0 vulnerabilities, Husky hook installed via `prepare`
 ✅ A real spec (tc1-social-links.spec.ts) passed against the live site from inside the container
 ✅ openjdk-17-jre-headless — java -version works; allure --version reports 2.43.0
@@ -114,10 +114,10 @@ msedge` run inside the container first.
 
 | Component          | Version                   | Purpose                                                                                                   |
 | ------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Playwright**     | 1.62.1                    | Official image, matches `@playwright/test` exactly                                                        |
-| Chromium           | bundled with 1.62.1       | Used by every `*-chromium` project                                                                        |
-| Firefox            | bundled with 1.62.1       | Used by every `*-firefox` project                                                                         |
-| WebKit             | bundled with 1.62.1       | Used by every `*-webkit` project                                                                          |
+| **Playwright**     | 1.63.0                    | Official image, matches `@playwright/test` exactly                                                        |
+| Chromium           | bundled with 1.63.0       | Used by every `*-chromium` project                                                                        |
+| Firefox            | bundled with 1.63.0       | Used by every `*-firefox` project                                                                         |
+| WebKit             | bundled with 1.63.0       | Used by every `*-webkit` project                                                                          |
 | Node.js            | as shipped in the image   | JavaScript/TypeScript runtime                                                                             |
 | TypeScript         | latest (installed global) | Type-safe development                                                                                     |
 | Git                | via devcontainer feature  | Version control inside the container                                                                      |
@@ -196,7 +196,7 @@ docker compose -f .devcontainer/docker-compose.yml up -d --build           # reb
 
 ### devcontainer.json
 
-- **Base image:** `mcr.microsoft.com/playwright:v1.62.1-noble` referenced directly (no build
+- **Base image:** `mcr.microsoft.com/playwright:v1.63.0-noble` referenced directly (no build
   step, fast start) - the exact same tag the `Dockerfile` in this folder uses, so the VS Code
   path and the manual `docker compose` path mean the same Node/browser/OS-dependency versions.
 - **Features:** Git (`ghcr.io/devcontainers/features/git:1`) and Java 17

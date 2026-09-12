@@ -1,7 +1,7 @@
 # Only used by docker-compose.yml in this folder for a manual `docker compose up` dev shell /
 # headless test runs outside VS Code - devcontainer.json itself references the base image
 # directly (faster start, no build step) for VS Code Dev Containers / GitHub Codespaces.
-FROM mcr.microsoft.com/playwright:v1.62.1-noble
+FROM mcr.microsoft.com/playwright:v1.63.0-noble
 
 # Interactive-dev extras the base Playwright image doesn't bother with. It already runs as
 # non-root "pwuser" - let it sudo for ad-hoc installs. openjdk-17-jre-headless (JRE only, no
