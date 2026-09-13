@@ -266,7 +266,7 @@ product bug.
 ```mermaid
 flowchart LR
     TRIGGER["push or pull_request<br/>-> main or develop<br/>(+ workflow_dispatch)"] --> CONC["concurrency group<br/>cancels a superseded run"]
-    CONC --> JOB["job runs inside container:<br/>mcr.microsoft.com/playwright:v1.62.1-noble"]
+    CONC --> JOB["job runs inside container:<br/>mcr.microsoft.com/playwright:v1.63.0-noble"]
     JOB --> CHECKOUT["actions/checkout"]
     CHECKOUT --> NODE["setup-node 22<br/>(lint-staged floor)"]
     NODE --> JAVA["setup-java 17 Temurin<br/>(for allure generate)"]
@@ -286,7 +286,7 @@ Two entry points into the same `.devcontainer/` image, one image definition:
 
 ```mermaid
 flowchart TB
-    IMG["mcr.microsoft.com/playwright:v1.62.1-noble<br/>(Chromium + Firefox + WebKit preinstalled)"]
+    IMG["mcr.microsoft.com/playwright:v1.63.0-noble<br/>(Chromium + Firefox + WebKit preinstalled)"]
 
     IMG --> DCJSON["devcontainer.json<br/>references IMG directly (no build step)<br/>+ Git & Java 17 devcontainer features"]
     IMG --> DCFILE["Dockerfile (.devcontainer/)<br/>+ git, curl, sudo, openjdk-17-jre-headless<br/>+ node_modules ownership fix + git safe.directory fix"]
