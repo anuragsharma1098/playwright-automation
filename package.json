@@ -37,7 +37,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf allure-results allure-report playwright-report test-results",
     "prepare": "husky",
-    "postinstall": "playwright install chromium firefox webkit msedge"
+    "postinstall": "node scripts/install-browsers.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

@@ -107,8 +107,13 @@ surfaced, not left as manual troubleshooting steps:
 
 Note: `playwright.config.ts` runs each site against Chromium, Firefox, and WebKit (all three are
 bundled in this base image); Microsoft Edge is a fourth project per site but uses the real `msedge`
-channel, which this image doesn't include - `npm run test:edge` needs `npx playwright install
-msedge` run inside the container first.
+channel, which this image doesn't include. `npm ci`'s `postinstall`
+(`scripts/install-browsers.mjs`) downloads it automatically on top of the bundled three - except
+on Linux ARM64, where Microsoft has never published an Edge build at all, so the script skips it
+there instead of failing `npm ci`/`postCreateCommand`. That's the container Docker Desktop builds
+by default both for a native Linux ARM64 host and for an Apple Silicon Mac host - `npm run
+test:edge` isn't usable in either of those cases without a real Windows/macOS/Linux-x64 Edge
+install.
 
 ## What's included in the dev container
 
