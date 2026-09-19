@@ -25,6 +25,11 @@ npm install              # installs deps + Playwright browsers via postinstall, 
 npx playwright install chromium   # if browsers weren't installed automatically
 ```
 
+`postinstall` (`scripts/install-browsers.mjs`) installs Chromium, Firefox, WebKit, and Microsoft
+Edge (`msedge` channel) - except on Linux ARM64, where Microsoft has never published an Edge
+build, so it's skipped there instead of failing the install; `npm run test:edge` (the
+`*-edge` projects) needs a real Windows/macOS/Linux-x64 machine.
+
 ## Running the suite
 
 ```bash
