@@ -13,7 +13,7 @@ import { withHighlight } from '@src/utils/screenshot';
  * exceed what was searched. It complements TC3 (which checks one property) by sampling multiple
  * results, since a capacity bug is more likely to show up on some listings than others.
  */
-test.describe('TC6 (Bonus) - Guest capacity consistency', () => {
+test.describe('TC6 (Bonus) - Guest capacity consistency', { tag: '@regression' }, () => {
   test('every sampled result respects the searched guest count on its own detail page', async ({
     home,
     results,
@@ -38,7 +38,7 @@ test.describe('TC6 (Bonus) - Guest capacity consistency', () => {
     test.skip(hrefs.length === 0, `No results for a party of ${adults} at this destination/date`);
 
     for (const href of hrefs) {
-      await page.goto(href, { waitUntil: 'load' });
+      await property.open(href);
       await property.name.waitFor({ state: 'visible' });
       const name = await property.name.textContent();
 

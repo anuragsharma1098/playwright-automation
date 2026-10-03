@@ -175,15 +175,17 @@ Not required — `--project='sedona-*'` does the same thing without touching `pa
 
 ### Step 8 — CI: nothing to do
 
-`.github/workflows/playwright.yml` already runs:
+`.github/workflows/playwright.yml` already runs the smoke tier:
 
 ```bash
-npx playwright test tests/tc*.spec.ts --project='*-chromium' --project='*-firefox' --project='*-webkit'
+npm run test -- --grep @smoke --project='*-chromium' --project='*-webkit'
 ```
 
-The `*` wildcard matches any site prefix, so `sedona-chromium`/`sedona-firefox`/`sedona-webkit` are
-included the next time CI runs — no workflow edit needed. `*-edge` projects are excluded for every
-site (existing sites included), because the CI container image doesn't bundle real Microsoft Edge;
+The `*` wildcard matches any site prefix, so the new site's smoke tests (`sedona-chromium`,
+`sedona-webkit`) are included the next time CI runs — no workflow edit needed. CI runs only the
+`@smoke` tests, so check the regression tier for the new site locally with
+`npm run test:regression -- --project='sedona-*'`. `*-edge` projects are excluded for every site
+(existing sites included), because the CI container image doesn't bundle real Microsoft Edge;
 that's a browser-tooling limitation, not something that varies per site.
 
 ### Step 9 — Quality gates (mandatory before committing)

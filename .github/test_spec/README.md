@@ -28,6 +28,9 @@ Browsers: Chrome, Firefox, Safari (WebKit), Edge — same steps, run once per br
 | TC5         | Form validation                | [TC5-form-validation.md](TC5-form-validation.md)       |
 | TC6 (Bonus) | Guest capacity consistency     | [TC6-guest-capacity.md](TC6-guest-capacity.md)         |
 
+The full automated suite, including the smoke tier and the regression tests added beyond TC1–TC6,
+is listed in [smoke-regression-catalogue.md](smoke-regression-catalogue.md).
+
 `demo-intentional-failure.spec.ts` is not included here — it's a deliberately-broken automated
 test used only to demo the diagnostics pipeline (screenshots/highlight-on-failure) and has no
 manual-testing equivalent.

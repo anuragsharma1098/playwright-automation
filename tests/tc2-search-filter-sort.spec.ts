@@ -10,7 +10,7 @@ import { withHighlight } from '@src/utils/screenshot';
  * branching for that part at all. Only the destination typed into search and the check that the
  * URL's locationId reflects it are site-specific, and that comes entirely from `siteConfig`.
  */
-test.describe('TC2 - Search, filtering, and sorting', () => {
+test.describe('TC2 - Search, filtering, and sorting', { tag: '@regression' }, () => {
   test('dynamic search, filters, and sort all take effect and stay consistent with each other', async ({
     home,
     results,

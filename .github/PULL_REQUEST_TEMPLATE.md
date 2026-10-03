@@ -29,7 +29,7 @@
 
 ## Checklist
 
-- [ ] New scenarios follow the `tc*.spec.ts` naming convention and are covered by CI's glob (or are deliberately excluded, like `demo-intentional-failure.spec.ts`, with a comment explaining why)
+- [ ] New tests are tagged `@smoke` or `@regression` (only `@smoke` runs in CI, so keep it to fast, critical-path checks), or are deliberately untagged, like `demo-intentional-failure.spec.ts`, with a comment explaining why
 - [ ] Site-specific quirks live in `src/config/sites.ts` / page objects, not hardcoded in the test
 - [ ] No `sample-report*`, `playwright-report/`, or `allure-report/` output committed
 - [ ] Docs updated if behavior, structure, or setup changed (`README.md`, `docs/ARCHITECTURE.md`, `.github/test_spec/`)

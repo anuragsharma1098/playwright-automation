@@ -42,6 +42,14 @@ export class ListWithUsPage extends BasePage {
       .first();
   }
 
+  /** Visible field labels in form order, e.g. ["Name*", "Email*", ..., "How did you hear about
+   * us?"]. Each label is the first child `div` of a `div.flex-col` field row (confirmed live). */
+  async fieldLabels(): Promise<string[]> {
+    await this.emailInput.waitFor({ state: 'visible' });
+    const labels = await this.page.locator('div.flex-col > div.font-semibold').allTextContents();
+    return labels.map((l) => l.trim());
+  }
+
   async isSubmitDisabled(): Promise<boolean> {
     return this.submitButton.isDisabled();
   }

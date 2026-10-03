@@ -10,6 +10,8 @@
   "scripts": {
     "pretest": "npm run allure:clean",
     "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
     "test:alice": "playwright test --project=alice-chromium --project=alice-firefox --project=alice-webkit --project=alice-edge",
     "test:firesky": "playwright test --project=firesky-chromium --project=firesky-firefox --project=firesky-webkit --project=firesky-edge",
     "test:goodlife": "playwright test --project=goodlife-chromium --project=goodlife-firefox --project=goodlife-webkit --project=goodlife-edge",

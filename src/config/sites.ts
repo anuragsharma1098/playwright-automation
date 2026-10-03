@@ -12,12 +12,20 @@
  * - the property card name element is the one confirmed exception (`<label
  * class="text-size-heading3">` on Alice vs. `<h3 class="text-size-body">` on Firesky and
  * GoodLifeVacations), captured below as `cardNameSelector`.
+ *
+ * Re-confirmed live in October 2026: Firesky's homepage was redesigned (hamburger header, hero
+ * destination tiles instead of category pills, search combobox renamed to "Where"), and Alice is
+ * the only site with an inline header nav and a footer "Search By Property" box - see the
+ * `headerNavStyle`, `navStyle`, and `hasFooterPropertySearch` fields below.
  */
 
 export type SiteName = 'alice' | 'firesky' | 'goodlife';
 
 /** How the site's primary destination/category navigation is shaped (TC4). */
-export type NavStyle = 'destinationDropdown' | 'categoryPills';
+export type NavStyle = 'destinationDropdown' | 'categoryPills' | 'destinationTiles';
+
+/** Whether the header shows its links inline or behind an "Open menu" hamburger button. */
+export type HeaderNavStyle = 'inline' | 'hamburger';
 
 export interface SiteConfig {
   name: SiteName;
@@ -48,6 +56,14 @@ export interface SiteConfig {
   navMenuButtonLabel?: string;
   /** For 'categoryPills' sites: the label of a pill/tab to click. */
   navCategoryLabel?: string;
+  /** For 'destinationTiles' sites: the heading of the homepage destination tile to click. */
+  navDestinationTileLabel?: string;
+
+  /** Header paradigm. Every site exposes "Contact Us" and "Specials" header links either way. */
+  headerNavStyle: HeaderNavStyle;
+
+  /** Whether the footer has a "Search By Property" typeahead (Alice only, confirmed live). */
+  hasFooterPropertySearch: boolean;
 }
 
 export const siteConfigs: Record<SiteName, SiteConfig> = {
@@ -62,6 +78,8 @@ export const siteConfigs: Record<SiteName, SiteConfig> = {
     listWithUsExtraFields: [],
     navStyle: 'destinationDropdown',
     navMenuButtonLabel: 'Destinations',
+    headerNavStyle: 'inline',
+    hasFooterPropertySearch: true,
   },
   firesky: {
     name: 'firesky',
@@ -72,8 +90,12 @@ export const siteConfigs: Record<SiteName, SiteConfig> = {
     cardNameSelector: 'h3.text-size-body',
     listWithUsPath: '/list-with-us',
     listWithUsExtraFields: ['Property Location'],
-    navStyle: 'categoryPills',
-    navCategoryLabel: 'Pool',
+    // The category pills were removed in the redesign; the hero now has "Where Do You Want to Go?"
+    // destination tiles linking to /{city}-vacation-rentals landing pages.
+    navStyle: 'destinationTiles',
+    navDestinationTileLabel: 'Scottsdale',
+    headerNavStyle: 'hamburger',
+    hasFooterPropertySearch: false,
   },
   goodlife: {
     name: 'goodlife',
@@ -86,5 +108,7 @@ export const siteConfigs: Record<SiteName, SiteConfig> = {
     listWithUsExtraFields: ['Property Location'],
     navStyle: 'categoryPills',
     navCategoryLabel: 'Group Homes',
+    headerNavStyle: 'hamburger',
+    hasFooterPropertySearch: false,
   },
 };

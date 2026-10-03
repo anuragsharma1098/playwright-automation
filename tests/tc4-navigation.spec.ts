@@ -5,12 +5,12 @@ import { withHighlight } from '@src/utils/screenshot';
  * TC4 - Navigation.
  *
  * Drives each site's primary destination/category navigation component through to an opened
- * property. Alice Lodging and Firesky Retreats implement this completely differently (a
- * "Destinations" popover with city links vs. a row of category pill tabs that navigate directly)
- * - NavComponent picks the right flow via `siteConfig.navStyle` so this spec stays identical for
- * both. See NavComponent for the implementation split.
+ * property. The sites implement this completely differently (Alice: a "Destinations" popover with
+ * city links; GoodLife: a row of category pill tabs; Firesky: hero destination tiles) -
+ * NavComponent picks the right flow via `siteConfig.navStyle` so this spec stays identical for
+ * every site. See NavComponent for the implementation split.
  */
-test.describe('TC4 - Navigation', () => {
+test.describe('TC4 - Navigation', { tag: '@regression' }, () => {
   test('destination/category navigation is populated, responds to interaction, and leads to a real property', async ({
     home,
     property,

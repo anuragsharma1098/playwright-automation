@@ -1,9 +1,12 @@
 import { test as base } from '@playwright/test';
 import { siteConfigs, type SiteConfig, type SiteName } from '@src/config/sites';
+import { BookingPage } from '@src/pages/BookingPage';
+import { ContactUsPage } from '@src/pages/ContactUsPage';
 import { HomePage } from '@src/pages/HomePage';
 import { ListWithUsPage } from '@src/pages/ListWithUsPage';
 import { PropertyDetailsPage } from '@src/pages/PropertyDetailsPage';
 import { SearchResultsPage } from '@src/pages/SearchResultsPage';
+import { StaticPage } from '@src/pages/StaticPage';
 
 /** Custom Playwright config option, set per-project in playwright.config.ts (`use: { site: ... }`). */
 export interface TestOptions {
@@ -16,6 +19,9 @@ interface Fixtures {
   results: SearchResultsPage;
   property: PropertyDetailsPage;
   listWithUs: ListWithUsPage;
+  booking: BookingPage;
+  contactUs: ContactUsPage;
+  staticPage: StaticPage;
 }
 
 /**
@@ -44,6 +50,18 @@ export const test = base.extend<TestOptions & Fixtures>({
 
   listWithUs: async ({ page, siteConfig }, use) => {
     await use(new ListWithUsPage(page, siteConfig));
+  },
+
+  booking: async ({ page, siteConfig }, use) => {
+    await use(new BookingPage(page, siteConfig));
+  },
+
+  contactUs: async ({ page, siteConfig }, use) => {
+    await use(new ContactUsPage(page, siteConfig));
+  },
+
+  staticPage: async ({ page, siteConfig }, use) => {
+    await use(new StaticPage(page, siteConfig));
   },
 });
 
