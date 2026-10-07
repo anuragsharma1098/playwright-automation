@@ -14,7 +14,7 @@ import { withHighlight } from '@src/utils/screenshot';
  * checkIn/checkOut/adults through as URL query params onto the property page, so any drift there
  * would indicate a real booking-integrity bug, not a UI quirk.
  */
-test.describe('TC3 - Property details validation', () => {
+test.describe('TC3 - Property details validation', { tag: '@regression' }, () => {
   test('a property opened from filtered results matches the search criteria used to find it', async ({
     home,
     results,

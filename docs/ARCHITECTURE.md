@@ -272,13 +272,18 @@ flowchart LR
     NODE --> JAVA["setup-java 17 Temurin<br/>(for allure generate)"]
     JAVA --> CI["npm ci"]
     CI --> ALLUREPRE["allure:clean"]
-    ALLUREPRE --> RUN["npx playwright test tests/tc*.spec.ts<br/>--project='*-chromium' --project='*-webkit'<br/>(glob excludes demo-intentional-failure.spec.ts;<br/>edge projects skipped - not in this image)"]
+    ALLUREPRE --> RUN["npm run test -- --grep @smoke<br/>--project='*-chromium' --project='*-webkit'<br/>(smoke tier only: tests/smoke/;<br/>edge projects skipped - not in this image)"]
     RUN --> ALLUREGEN["allure generate (always)"]
     ALLUREGEN --> ART1["upload playwright-report/ (always)"]
     ALLUREGEN --> ART2["upload allure-report/ (always)"]
     ALLUREGEN --> ART3["upload junit-report.xml (always)"]
     RUN -.on failure.-> ART4["upload test-results/ (failure only)"]
 ```
+
+CI gates on the `@smoke` tier only - the fast checks that every site is up and a guest can get
+from search to checkout. The `@regression` tier (`tests/regression/` plus TC1-TC6) is run locally
+or on demand with `npm run test:regression`. `demo-intentional-failure.spec.ts` is untagged and
+excluded by `testIgnore`, so it never runs in CI.
 
 ## 7. Containerization
 

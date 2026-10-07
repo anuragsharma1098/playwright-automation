@@ -51,16 +51,16 @@ jobs:
       - name: Clean previous Allure results
         run: npm run allure:clean
 
-      # tests/demo-intentional-failure.spec.ts fails on every run by design (it exists to
-      # demonstrate the failure-diagnostics pipeline locally - see README.md "Failure
-      # diagnostics") and would make this job permanently red if included. tc*.spec.ts covers
-      # every real TC1-TC6 scenario against both sites; the glob naturally excludes it.
+      # Runs only the @smoke tier (tests/smoke/) - the fast "is every site up and can a guest
+      # book?" checks. The @regression tier (tests/regression/ plus TC1-TC6) is for local/manual
+      # runs via `npm run test:regression`. demo-intentional-failure.spec.ts is untagged and is
+      # also excluded by `testIgnore` in playwright.config.ts.
       #
       # Restricted to chromium/webkit projects: the playwright/playwright Docker image
       # only bundles those three engines. The *-edge projects (real Microsoft Edge via the
       # 'msedge' channel) aren't in this image and are meant for local/manual runs instead.
-      - name: Run test suite (both sites, chromium/webkit)
-        run: npm run test -- tests/tc*.spec.ts --project='*-chromium' --project='*-webkit'
+      - name: Run smoke tests (all sites, chromium/webkit)
+        run: npm run test -- --grep @smoke --project='*-chromium' --project='*-webkit'
         env:
           CI: true
 

@@ -8,6 +8,14 @@ export interface SearchCriteriaFromUrl {
   locationId: string | null;
 }
 
+/** What a results card shows, read from its visible text. `rating` is null for "No reviews yet". */
+export interface PropertyCardSummary {
+  name: string;
+  rating: number | null;
+  reviewCount: number;
+  bedrooms: number | null;
+}
+
 /** The /listings results page: filters, sort, and the property card grid. Filters, sort, and the
  * grid itself are identical DOM/behavior on both sites (same Flow One platform); the one
  * confirmed exception is the property-name element, which differs by site (see
@@ -15,6 +23,104 @@ export interface SearchCriteriaFromUrl {
 export class SearchResultsPage extends BasePage {
   private get cardNames() {
     return this.page.locator(this.site.cardNameSelector);
+  }
+
+  async goto(query = ''): Promise<void> {
+    await this.open(`/listings${query}`);
+  }
+
+  /** Every card on every site carries `aria-label="Property card <name>"` (confirmed live). */
+  get propertyCards() {
+    return this.page.locator('[aria-label^="Property card "]');
+  }
+
+  get filtersButton() {
+    return this.page.getByRole('button', { name: 'Filters', exact: true });
+  }
+
+  /** Exact match matters: a plain `getByLabel('Sort')` substring-matches GoodLife cards such as
+   * "Property card Bahama Bay Resort 34407" (confirmed live - strict-mode violation). */
+  get sortControl() {
+    return this.page.getByLabel('Sort', { exact: true });
+  }
+
+  get pagination() {
+    return this.page.getByRole('navigation', { name: 'Pagination' });
+  }
+
+  get nextPageButton() {
+    return this.pagination.getByRole('button', { name: 'Next Page' });
+  }
+
+  get currentPageButton() {
+    return this.pagination.getByRole('button', { name: /current page/ });
+  }
+
+  get showMapButton() {
+    return this.page.getByRole('button', { name: 'Show Map' });
+  }
+
+  get hideMapButton() {
+    return this.page.getByRole('button', { name: 'Hide Map' });
+  }
+
+  get map() {
+    return this.page.getByRole('region', { name: 'Map' });
+  }
+
+  /** A Show Map click that lands before the page hydrates is silently dropped (confirmed live on
+   * Alice and GoodLife), so this re-clicks until the toggle actually flips to "Hide Map". */
+  async showMap(): Promise<void> {
+    await expect(async () => {
+      if (await this.showMapButton.isVisible()) {
+        await this.showMapButton.click({ timeout: 5000 });
+      }
+      await expect(this.hideMapButton).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 30_000 });
+  }
+
+  urlParam(name: string): string | null {
+    return new URL(this.page.url()).searchParams.get(name);
+  }
+
+  /** Reads name/rating/review count/bedrooms off each card. Bedroom markup differs by site
+   * (confirmed live): Alice puts it in an icon's `aria-label="3 Beds"`; Firesky writes
+   * "3 bedrooms"; GoodLife shows a bare "3" beside a `role="img" aria-label="Bedrooms"` icon.
+   * Ratings read "5.0 (8 reviews)" on Alice and "4.9 (26)" elsewhere. */
+  async getCardSummaries(): Promise<PropertyCardSummary[]> {
+    await this.waitForResultsToSettle();
+    return this.propertyCards.evaluateAll((cards) =>
+      cards.map((card) => {
+        const text = (card as HTMLElement).innerText.replace(/\s+/g, ' ');
+        const rating = text.match(/(\d\.\d)\s*\(\s*(\d+)/);
+        const bedsLabel = [...card.querySelectorAll('[aria-label]')]
+          .map((el) => el.getAttribute('aria-label') ?? '')
+          .find((label) => /^\d+(\.\d+)? Beds$/.test(label));
+        const bedsIconHolder =
+          card.querySelector('[aria-label="Bedrooms"]')?.parentElement?.parentElement;
+        const beds =
+          bedsLabel?.match(/^(\d+)/) ??
+          text.match(/(\d+) bedrooms?/i) ??
+          bedsIconHolder?.textContent?.trim().match(/^(\d+)/);
+        return {
+          name: (card.getAttribute('aria-label') ?? '').replace(/^Property card /, ''),
+          rating: rating ? Number(rating[1]) : null,
+          reviewCount: rating ? Number(rating[2]) : 0,
+          bedrooms: beds ? Number(beds[1]) : null,
+        };
+      }),
+    );
+  }
+
+  /** Clicks "Next Page" and waits until the URL and the first card have both moved on. */
+  async goToNextPage(): Promise<void> {
+    const firstBefore = await this.propertyCards.first().getAttribute('aria-label');
+    const nextPage = Number(this.urlParam('page') ?? '1') + 1;
+    await this.nextPageButton.click();
+    await this.page.waitForURL(new RegExp(`[?&]page=${nextPage}\\b`), { timeout: 15_000 });
+    await expect(this.propertyCards.first())
+      .not.toHaveAttribute('aria-label', firstBefore ?? '', { timeout: 20_000 })
+      .catch(() => {});
   }
 
   /** Waits for the results grid to finish its initial async load. A brand-new /listings
@@ -71,7 +177,13 @@ export class SearchResultsPage extends BasePage {
     // Both sites keep at least one background connection open (analytics/polling), so
     // 'networkidle' never resolves here - a bounded settle wait is used instead.
     const countBefore = await this.cardNames.count();
+    const urlBefore = this.page.url();
     await this.page.getByRole('button', { name: 'Apply', exact: true }).click();
+    // Applied filters are written to the URL (e.g. `bedrooms=3`, confirmed live) - the earliest
+    // signal that the new search has been issued, even when the card count doesn't change.
+    await this.page
+      .waitForURL((url) => url.toString() !== urlBefore, { timeout: 8000 })
+      .catch(() => {});
     await this.page
       .waitForFunction(
         ({ selector, prev }) => document.querySelectorAll(selector).length !== prev,
@@ -90,8 +202,14 @@ export class SearchResultsPage extends BasePage {
       .textContent()
       .catch(() => null);
 
-    await this.page.getByLabel('Sort').click();
+    const urlBefore = this.page.url();
+    await this.sortControl.click();
     await this.page.getByText(optionLabel, { exact: true }).click();
+    // The chosen sort lands in the URL (e.g. `sort=most-reviewed`, confirmed live) - on Alice only
+    // after 10s+ at times, by which point the dropdown already shows the new choice.
+    await this.page
+      .waitForURL((url) => url.toString() !== urlBefore, { timeout: 20_000 })
+      .catch(() => {});
 
     // The list re-fetches and re-renders after choosing a sort option; wait for that to actually
     // finish (not just a fixed delay) before any caller reads result names/order. A changed first

@@ -13,7 +13,7 @@ import { withHighlight } from '@src/utils/screenshot';
  * Notable difference between the sites (documented via annotation, not asserted): Firesky's form
  * has an extra required "Property Location" field that Alice's does not.
  */
-test.describe('TC5 - Form validation', () => {
+test.describe('TC5 - Form validation', { tag: '@regression' }, () => {
   test('invalid contact details are rejected with field-level validation messages', async ({
     listWithUs,
     siteConfig,

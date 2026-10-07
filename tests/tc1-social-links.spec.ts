@@ -18,7 +18,7 @@ import { withHighlight } from '@src/utils/screenshot';
  * step) plus a lenient reachability check that only fails on a genuine dead link (DNS/connection
  * failure or a definitive 404), tolerating bot-defense 4xx challenge responses.
  */
-test.describe('TC1 - Social media links', () => {
+test.describe('TC1 - Social media links', { tag: '@regression' }, () => {
   test('footer social links are discovered dynamically and each points to a live, well-formed destination', async ({
     home,
     page,

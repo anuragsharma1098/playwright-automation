@@ -247,17 +247,28 @@ all three ways to open it, troubleshooting).
 ## Continuous Integration
 
 `.github/workflows/playwright.yml` runs on every push and pull request targeting `main` or
-`develop` (plus manual `workflow_dispatch`), against both live sites:
+`develop` (plus manual `workflow_dispatch`), against every site in `src/config/sites.ts`:
 
-- Node 22 (matches `package.json`'s `engines.node`, driven by `lint-staged`) + Temurin JRE 17
-  (for Allure) on `ubuntu-latest`, `npm ci`, `npx playwright install --with-deps chromium`.
-- Runs `npx playwright test tests/tc*.spec.ts` - the glob deliberately excludes
-  `demo-intentional-failure.spec.ts`, which fails on every run by design (see "Failure
-  diagnostics" above) and would make the job permanently red if included; it's a local/manual
-  diagnostics demo, not a CI gate.
-- Uploads the Playwright HTML report and the generated Allure report as workflow artifacts on
-  every run (`if: always()`), plus raw `test-results/` (screenshots/videos/traces) only on
-  failure.
+- The job runs inside the `mcr.microsoft.com/playwright:v1.63.0-noble` container (browsers
+  preinstalled), with Node 22 (matches `package.json`'s `engines.node`, driven by `lint-staged`)
+  and Temurin JRE 17 (for Allure), then `npm ci --ignore-scripts`.
+- **Only the smoke tier runs in CI:**
+  `npm run test -- --grep @smoke --project='*-chromium' --project='*-webkit'`. That's the
+  `@smoke` tests in `tests/smoke/` (homepage, search, listings, property page, Book Now hand-off,
+  key pages) - 10 tests per site per browser. The `@regression` tier (`tests/regression/` plus
+  TC1-TC6) is deliberately left out of CI; run it locally or on demand with
+  `npm run test:regression`. See
+  [`.github/test_spec/smoke-regression-catalogue.md`](.github/test_spec/smoke-regression-catalogue.md)
+  for what each tier covers.
+- Chromium and WebKit projects only. The container image has no real Microsoft Edge, so the
+  `*-edge` projects are for local runs; Firefox projects aren't selected.
+- `demo-intentional-failure.spec.ts` fails on every run by design (see "Failure diagnostics"
+  above). It carries no tag and is also excluded by `testIgnore` in `playwright.config.ts`, so it
+  never runs in CI.
+- With `CI=true`, `playwright.config.ts` uses 2 workers and 2 retries per test.
+- Uploads the Playwright HTML report, the generated Allure report and the JUnit XML as workflow
+  artifacts on every run (`if: always()`), plus raw `test-results/` (screenshots/videos/traces)
+  only on failure.
 - A `concurrency` group cancels a superseded run (e.g. a second push to a branch with an open PR)
   rather than hitting both production sites twice at once - the same good-citizen reasoning as the
   capped `workers: 1` setting (see "Assumptions, trade-offs, and limitations" above).
